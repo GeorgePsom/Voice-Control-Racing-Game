@@ -389,7 +389,7 @@ public class PrometeoCarController : MonoBehaviour
         }
 
         else {
-    
+            Debug.Log(useVoiceControls);
             if (!useVoiceControls) {
                 
                 wPressed = Input.GetKey(KeyCode.W);
@@ -399,14 +399,13 @@ public class PrometeoCarController : MonoBehaviour
                 spacePressed = Input.GetKey(KeyCode.Space);
                 spaceReleased = Input.GetKeyUp(KeyCode.Space);
             }
-            
+
             if (wPressed)
             {
                 CancelInvoke("DecelerateCar");
                 deceleratingCar = false;
                 GoForward();
             }
-
             if (sPressed)
             {
                 CancelInvoke("DecelerateCar");
@@ -414,6 +413,14 @@ public class PrometeoCarController : MonoBehaviour
                 GoReverse();
             }
 
+            if (Input.GetKey(KeyCode.A))
+            {
+                TurnLeft();
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                TurnRight();
+            }
             if (spacePressed)
             {
                 CancelInvoke("DecelerateCar");
@@ -428,28 +435,22 @@ public class PrometeoCarController : MonoBehaviour
             {
                 ThrottleOff();
             }
-            if ((sPressed && !wPressed) && !spacePressed && !deceleratingCar)
+            if ((!sPressed && !wPressed) && !spacePressed && !deceleratingCar)
             {
                 InvokeRepeating("DecelerateCar", 0f, 0.1f);
                 deceleratingCar = true;
-            }
-
-            if (Input.GetKey(KeyCode.A))
-            {
-                TurnLeft();
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                TurnRight();
             }
             if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f)
             {
                 ResetSteeringAngle();
             }
 
-            if (wReleased) { wReleased = false; }
-            if (sReleased) { sReleased = false; }
-            if (spaceReleased) {  spaceReleased = false; }
+            /*if (useVoiceControls)
+            {
+                if (wReleased) { wReleased = false; }
+                if (sReleased) { sReleased = false; }
+                if (spaceReleased) { spaceReleased = false; }
+            }*/
         }
 
 

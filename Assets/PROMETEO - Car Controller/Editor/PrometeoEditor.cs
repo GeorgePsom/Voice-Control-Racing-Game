@@ -69,6 +69,7 @@ public class PrometeoEditor : Editor{
   //
   //
   private SerializedProperty useTouchControls;
+  private SerializedProperty useGyroControls;
   private SerializedProperty throttleButton;
   private SerializedProperty reverseButton;
   private SerializedProperty turnRightButton;
@@ -112,6 +113,7 @@ public class PrometeoEditor : Editor{
     tireScreechSound = SO.FindProperty("tireScreechSound");
 
     useTouchControls = SO.FindProperty("useTouchControls");
+    useGyroControls = SO.FindProperty("useGyroControls");
     throttleButton = SO.FindProperty("throttleButton");
     reverseButton = SO.FindProperty("reverseButton");
     turnRightButton = SO.FindProperty("turnRightButton");
@@ -241,6 +243,13 @@ public class PrometeoEditor : Editor{
         EditorGUILayout.PropertyField(handbrakeButton, new GUIContent("Handbrake Button: "));
 
     EditorGUILayout.EndToggleGroup();
+
+        GUILayout.Space(25);
+        GUILayout.Label("GYRO CONTROLS", EditorStyles.boldLabel);
+        useGyroControls.boolValue = EditorGUILayout.BeginToggleGroup("Use gyro controls (mobile devices)?", useGyroControls.boolValue);
+        GUILayout.Space(10);
+
+        EditorGUILayout.EndToggleGroup();
 
     //END
 

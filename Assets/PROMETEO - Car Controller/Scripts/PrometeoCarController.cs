@@ -11,8 +11,11 @@ something useful for your game. Best regards, Mena.
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Windows.Speech;
 
 public class PrometeoCarController : MonoBehaviour
 {
@@ -108,9 +111,18 @@ public class PrometeoCarController : MonoBehaviour
 
       [Space(20)]
       //[Header("CONTROLS")]
-      [Space(10)]
+      [Space(11)]
       //The following variables lets you to set up touch controls for mobile devices.
       public bool useTouchControls = false;
+      //Asdf
+      public bool useGyroControls = false;
+      bool useVoiceControls = false;
+      public bool wPressed = false;
+      public bool wReleased = false;
+      public bool sPressed = false;
+      public bool sReleased = false;
+      public bool spacePressed = false;
+      public bool spaceReleased = false;
       public GameObject throttleButton;
       PrometeoTouchInput throttlePTI;
       public GameObject reverseButton;
@@ -121,6 +133,9 @@ public class PrometeoCarController : MonoBehaviour
       PrometeoTouchInput turnLeftPTI;
       public GameObject handbrakeButton;
       PrometeoTouchInput handbrakePTI;
+
+      KeywordRecognizer keywordRecognizer;
+      Dictionary<string, System.Action> keywords = new Dictionary<string, Action>();
 
     //CAR DATA
 
@@ -260,6 +275,52 @@ public class PrometeoCarController : MonoBehaviour
           }
         }
 
+
+        keywords.Add("start", () =>
+        {
+            wPressed = true;
+            Debug.Log("w press");
+        });
+
+        keywords.Add("break", () =>
+        {
+            spacePressed = true;
+            Debug.Log("break press");
+        });
+
+        keywords.Add("reverse", () =>
+        {
+            sPressed = true;
+            Debug.Log("s press");
+        });
+
+        keywords.Add("release", () =>
+        {
+            spacePressed = false;
+            wPressed = false;
+            sPressed = false;
+            sReleased = true;
+            wReleased = true;
+            spaceReleased = true;
+            Debug.Log("release");
+        });
+
+        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
+
+        keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
+
+        keywordRecognizer.Start();
+    }
+
+    private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
+    {
+        System.Action keywordAction;
+        Debug.Log(args.text);
+        // if the keyword recognized is in our dictionary, call that Action.
+        if (keywords.TryGetValue(args.text, out keywordAction))
+        {
+            keywordAction.Invoke();
+        }
     }
 
     // Update is called once per frame
@@ -275,95 +336,121 @@ public class PrometeoCarController : MonoBehaviour
       // Save the local velocity of the car in the z axis. Used to know if the car is going forward or backwards.
       localVelocityZ = transform.InverseTransformDirection(carRigidbody.velocity).z;
 
-      //CAR PHYSICS
+        //CAR PHYSICS
 
-      /*
-      The next part is regarding to the car controller. First, it checks if the user wants to use touch controls (for
-      mobile devices) or analog input controls (WASD + Space).
+        /*
+        The next part is regarding to the car controller. First, it checks if the user wants to use touch controls (for
+        mobile devices) or analog input controls (WASD + Space).
 
-      The following methods are called whenever a certain key is pressed. For example, in the first 'if' we call the
-      method GoForward() if the user has pressed W.
+        The following methods are called whenever a certain key is pressed. For example, in the first 'if' we call the
+        method GoForward() if the user has pressed W.
 
-      In this part of the code we specify what the car needs to do if the user presses W (throttle), S (reverse),
-      A (turn left), D (turn right) or Space bar (handbrake).
-      */
-      if (useTouchControls && touchControlsSetup){
+        In this part of the code we specify what the car needs to do if the user presses W (throttle), S (reverse),
+        A (turn left), D (turn right) or Space bar (handbrake).
+        */
+        if (useTouchControls && touchControlsSetup) {
 
-        if(throttlePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoForward();
-        }
-        if(reversePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoReverse();
-        }
+            if (throttlePTI.buttonPressed) {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoForward();
+            }
+            if (reversePTI.buttonPressed) {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoReverse();
+            }
 
-        if(turnLeftPTI.buttonPressed){
-          TurnLeft();
-        }
-        if(turnRightPTI.buttonPressed){
-          TurnRight();
-        }
-        if(handbrakePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          Handbrake();
-        }
-        if(!handbrakePTI.buttonPressed){
-          RecoverTraction();
-        }
-        if((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)){
-          ThrottleOff();
-        }
-        if((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar){
-          InvokeRepeating("DecelerateCar", 0f, 0.1f);
-          deceleratingCar = true;
-        }
-        if(!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f){
-          ResetSteeringAngle();
-        }
+            if (turnLeftPTI.buttonPressed) {
+                TurnLeft();
+            }
+            if (turnRightPTI.buttonPressed) {
+                TurnRight();
+            }
+            if (handbrakePTI.buttonPressed) {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                Handbrake();
+            }
+            if (!handbrakePTI.buttonPressed) {
+                RecoverTraction();
+            }
+            if ((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)) {
+                ThrottleOff();
+            }
+            if ((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar) {
+                InvokeRepeating("DecelerateCar", 0f, 0.1f);
+                deceleratingCar = true;
+            }
+            if (!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f) {
+                ResetSteeringAngle();
+            }
 
-      }else{
-
-        if(Input.GetKey(KeyCode.W)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoForward();
-        }
-        if(Input.GetKey(KeyCode.S)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoReverse();
         }
 
-        if(Input.GetKey(KeyCode.A)){
-          TurnLeft();
-        }
-        if(Input.GetKey(KeyCode.D)){
-          TurnRight();
-        }
-        if(Input.GetKey(KeyCode.Space)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          Handbrake();
-        }
-        if(Input.GetKeyUp(KeyCode.Space)){
-          RecoverTraction();
-        }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))){
-          ThrottleOff();
-        }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) && !deceleratingCar){
-          InvokeRepeating("DecelerateCar", 0f, 0.1f);
-          deceleratingCar = true;
-        }
-        if(!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f){
-          ResetSteeringAngle();
-        }
+        else {
+    
+            if (!useVoiceControls) {
+                
+                wPressed = Input.GetKey(KeyCode.W);
+                wReleased = Input.GetKeyUp(KeyCode.W);
+                sPressed = Input.GetKey(KeyCode.S);
+                sReleased = Input.GetKeyUp(KeyCode.S);
+                spacePressed = Input.GetKey(KeyCode.Space);
+                spaceReleased = Input.GetKeyUp(KeyCode.Space);
+            }
+            
+            if (wPressed)
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoForward();
+            }
 
-      }
+            if (sPressed)
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoReverse();
+            }
+
+            if (spacePressed)
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                Handbrake();
+            }
+            if (spaceReleased)
+            {
+                RecoverTraction();
+            }
+            if ((!sPressed && !wPressed))
+            {
+                ThrottleOff();
+            }
+            if ((sPressed && !wPressed) && !spacePressed && !deceleratingCar)
+            {
+                InvokeRepeating("DecelerateCar", 0f, 0.1f);
+                deceleratingCar = true;
+            }
+
+            if (Input.GetKey(KeyCode.A))
+            {
+                TurnLeft();
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                TurnRight();
+            }
+            if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f)
+            {
+                ResetSteeringAngle();
+            }
+
+            if (wReleased) { wReleased = false; }
+            if (sReleased) { sReleased = false; }
+            if (spaceReleased) {  spaceReleased = false; }
+        }
 
 
       // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.

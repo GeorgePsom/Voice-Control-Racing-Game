@@ -116,7 +116,7 @@ public class PrometeoCarController : MonoBehaviour
       public bool useTouchControls = false;
       //Asdf
       public bool useGyroControls = false;
-      bool useVoiceControls = false;
+      bool useVoiceControls = true;
       public bool wPressed = false;
       public bool wReleased = false;
       public bool sPressed = false;
@@ -279,33 +279,74 @@ public class PrometeoCarController : MonoBehaviour
         keywords.Add("start", () =>
         {
             wPressed = true;
+            if(sPressed)
+            {
+              sPressed = false;
+              sReleased = true;
+            }
+            if(spacePressed)
+            {
+              spacePressed = false;
+              spaceReleased = true;
+            }
             Debug.Log("w press");
         });
 
         keywords.Add("break", () =>
         {
+          
             spacePressed = true;
             Debug.Log("break press");
+            if(wPressed)
+            {
+              wPressed = false;
+              wReleased = true;
+            }
+            if(sPressed)
+            {
+              sPressed = false;
+              sReleased = true;
+            }
         });
 
         keywords.Add("reverse", () =>
         {
             sPressed = true;
+            if(spacePressed)
+            {
+              spacePressed = false;
+              spaceReleased = true;
+            }
+            if(wPressed)
+            {
+              wPressed = false;
+              wReleased = true;
+            }
             Debug.Log("s press");
         });
 
         keywords.Add("release", () =>
         {
+          if(spacePressed)
+          {
             spacePressed = false;
+            spaceReleased = true;
+          }
+          if(wPressed)
+          {
             wPressed = false;
+            wReleased = true;
+          }
+          if(sPressed)
+          {
             sPressed = false;
             sReleased = true;
-            wReleased = true;
-            spaceReleased = true;
+          }           
+           
             Debug.Log("release");
         });
 
-        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
+        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray(), ConfidenceLevel.Low);
 
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
 
@@ -389,7 +430,6 @@ public class PrometeoCarController : MonoBehaviour
         }
 
         else {
-            Debug.Log(useVoiceControls);
             if (!useVoiceControls) {
                 
                 wPressed = Input.GetKey(KeyCode.W);
@@ -445,12 +485,12 @@ public class PrometeoCarController : MonoBehaviour
                 ResetSteeringAngle();
             }
 
-            /*if (useVoiceControls)
+            if (useVoiceControls)
             {
                 if (wReleased) { wReleased = false; }
                 if (sReleased) { sReleased = false; }
                 if (spaceReleased) { spaceReleased = false; }
-            }*/
+            }
         }
 
 

@@ -114,15 +114,14 @@ public class PrometeoCarController : MonoBehaviour
       [Space(11)]
       //The following variables lets you to set up touch controls for mobile devices.
       public bool useTouchControls = false;
-      //Asdf
-      public bool useGyroControls = false;
-      bool useVoiceControls = true;
+      public bool useVoiceControls = true;
       public bool wPressed = false;
       public bool wReleased = false;
       public bool sPressed = false;
       public bool sReleased = false;
       public bool spacePressed = false;
       public bool spaceReleased = false;
+      public bool useGyroControls = true;
       public GameObject throttleButton;
       PrometeoTouchInput throttlePTI;
       public GameObject reverseButton;
@@ -267,12 +266,16 @@ public class PrometeoCarController : MonoBehaviour
             turnRightPTI = turnRightButton.GetComponent<PrometeoTouchInput>();
             handbrakePTI = handbrakeButton.GetComponent<PrometeoTouchInput>();
             touchControlsSetup = true;
-
+            Debug.Log("setup");
           }else{
             String ex = "Touch controls are not completely set up. You must drag and drop your scene buttons in the" +
             " PrometeoCarController component.";
             Debug.LogWarning(ex);
           }
+        }
+        if(useGyroControls)
+        {
+            Input.gyro.enabled = true;
         }
 
 
@@ -426,6 +429,46 @@ public class PrometeoCarController : MonoBehaviour
             if (!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f) {
                 ResetSteeringAngle();
             }
+        if(throttlePTI.buttonPressed){
+          CancelInvoke("DecelerateCar");
+          deceleratingCar = false;
+          GoForward();
+        }
+        if(reversePTI.buttonPressed){
+          CancelInvoke("DecelerateCar");
+          deceleratingCar = false;
+          GoReverse();
+        }
+        if(!useGyroControls)
+        {
+            if(turnLeftPTI.buttonPressed){
+            TurnLeft();
+            }
+            if(turnRightPTI.buttonPressed){
+            TurnRight();
+            }
+        }
+        if(handbrakePTI.buttonPressed){
+          CancelInvoke("DecelerateCar");
+          deceleratingCar = false;
+          Handbrake();
+        }
+        if(!handbrakePTI.buttonPressed){
+          RecoverTraction();
+        }
+        if((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)){
+          ThrottleOff();
+        }
+        if((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar){
+          InvokeRepeating("DecelerateCar", 0f, 0.1f);
+          deceleratingCar = true;
+        }
+        if(!useGyroControls)
+        {
+            if(!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f){
+                ResetSteeringAngle();
+            }
+        }
 
         }
 
@@ -453,6 +496,37 @@ public class PrometeoCarController : MonoBehaviour
                 GoReverse();
             }
 
+        if(!useGyroControls)
+        {
+            if(Input.GetKey(KeyCode.A)){
+            TurnLeft();
+            }
+            if(Input.GetKey(KeyCode.D)){
+            TurnRight();
+            }
+        }
+        if(Input.GetKey(KeyCode.Space)){
+          CancelInvoke("DecelerateCar");
+          deceleratingCar = false;
+          Handbrake();
+        }
+        if(Input.GetKeyUp(KeyCode.Space)){
+          RecoverTraction();
+        }
+        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))){
+          ThrottleOff();
+        }
+        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) && !deceleratingCar){
+          InvokeRepeating("DecelerateCar", 0f, 0.1f);
+          deceleratingCar = true;
+        }
+        if(!useGyroControls)
+        {
+            if(!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f){
+            ResetSteeringAngle();
+            }
+        }
+      }
             if (Input.GetKey(KeyCode.A))
             {
                 TurnLeft();
@@ -485,6 +559,23 @@ public class PrometeoCarController : MonoBehaviour
                 ResetSteeringAngle();
             }
 
+      if(useGyroControls)
+      {
+        float angle = Input.acceleration.x;
+        if(angle >= 0.05)
+        {
+            TurnRight(angle);
+        }
+        else if (angle <= -0.05)
+        {
+            TurnLeft(angle);
+        }
+        
+
+        if(Input.acceleration.x > -0.05 && Input.acceleration.x < 0.05 && steeringAxis != 0f)
+        {
+            ResetSteeringAngle();
+        }
             if (useVoiceControls)
             {
                 if (wReleased) { wReleased = false; }
@@ -549,6 +640,40 @@ public class PrometeoCarController : MonoBehaviour
     //
     //STEERING METHODS
     //
+
+    public void TurnLeft(float angle)
+    {
+        steeringAxis = steeringAxis - (Time.deltaTime * 10f * steeringSpeed);
+      
+        if(steeringAxis < -1f){
+            steeringAxis = -1f;
+        }
+
+        if(steeringAxis < angle * angle * -2)
+        {
+            steeringAxis = angle * angle * -2;
+        }
+
+        var steeringAngle = steeringAxis * maxSteeringAngle;
+        frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
+        frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);  
+    }
+
+    public void TurnRight(float angle)
+    {
+        steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
+        if(steeringAxis > 1f){
+            steeringAxis = 1f;
+        }
+        if(steeringAxis > angle * angle * 2)
+        {
+            steeringAxis = angle * angle * 2;
+        }
+
+        var steeringAngle = steeringAxis * maxSteeringAngle;
+        frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
+        frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
+    }
 
     //The following method turns the front car wheels to the left. The speed of this movement will depend on the steeringSpeed variable.
     public void TurnLeft(){

@@ -114,7 +114,7 @@ public class PrometeoCarController : MonoBehaviour
     [Space(11)]
     //The following variables lets you to set up touch controls for mobile devices.
     public bool useTouchControls = false;
-    public bool useVoiceControls = true;
+    bool useVoiceControls = false;
     public bool wPressed = false;
     public bool wReleased = false;
     public bool sPressed = false;
@@ -514,7 +514,6 @@ public class PrometeoCarController : MonoBehaviour
         {
             if (!useVoiceControls)
             {
-
                 wPressed = Input.GetKey(KeyCode.W);
                 wReleased = Input.GetKeyUp(KeyCode.W);
                 sPressed = Input.GetKey(KeyCode.S);
@@ -528,14 +527,12 @@ public class PrometeoCarController : MonoBehaviour
                 CancelInvoke("DecelerateCar");
                 deceleratingCar = false;
                 GoForward();
-                Debug.Log("wpressed");
             }
             if (sPressed)
             {
                 CancelInvoke("DecelerateCar");
                 deceleratingCar = false;
                 GoReverse();
-                Debug.Log("spressed");
             }
 
             if (!useGyroControls)
@@ -548,12 +545,6 @@ public class PrometeoCarController : MonoBehaviour
                 {
                     TurnRight();
                 }
-            }
-            if (spacePressed)
-            {
-                CancelInvoke("DecelerateCar");
-                deceleratingCar = false;
-                Handbrake();
             }
             if (spacePressed)
             {

@@ -114,7 +114,7 @@ public class PrometeoCarController : MonoBehaviour
     [Space(11)]
     //The following variables lets you to set up touch controls for mobile devices.
     public bool useTouchControls = false;
-    bool useVoiceControls = false;
+    public bool useVoiceControls = false;
     public bool wPressed = false;
     public bool wReleased = false;
     public bool sPressed = false;

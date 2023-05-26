@@ -70,6 +70,7 @@ public class PrometeoEditor : Editor{
   //
   private SerializedProperty useTouchControls;
   private SerializedProperty useGyroControls;
+  private SerializedProperty useVoiceControls;
   private SerializedProperty throttleButton;
   private SerializedProperty reverseButton;
   private SerializedProperty turnRightButton;
@@ -114,6 +115,7 @@ public class PrometeoEditor : Editor{
 
     useTouchControls = SO.FindProperty("useTouchControls");
     useGyroControls = SO.FindProperty("useGyroControls");
+    useVoiceControls = SO.FindProperty("useVoiceControls");
     throttleButton = SO.FindProperty("throttleButton");
     reverseButton = SO.FindProperty("reverseButton");
     turnRightButton = SO.FindProperty("turnRightButton");
@@ -247,13 +249,26 @@ public class PrometeoEditor : Editor{
         GUILayout.Space(25);
         GUILayout.Label("GYRO CONTROLS", EditorStyles.boldLabel);
         useGyroControls.boolValue = EditorGUILayout.BeginToggleGroup("Use gyro controls (mobile devices)?", useGyroControls.boolValue);
+        EditorGUILayout.EndToggleGroup();
+        GUILayout.Label("VOICE CONTROLS", EditorStyles.boldLabel);
+        useVoiceControls.boolValue = EditorGUILayout.BeginToggleGroup("Use voice controls ?", useVoiceControls.boolValue);
+        
         GUILayout.Space(10);
 
-        EditorGUILayout.EndToggleGroup();
+    EditorGUILayout.EndToggleGroup();
 
-    //END
+        /*EditorGUILayout.EndToggleGroup();
 
-    GUILayout.Space(10);
+        GUILayout.Space(25);
+        GUILayout.Label("VOICE CONTROLS", EditorStyles.boldLabel);
+        useVoiceControls.boolValue = EditorGUILayout.BeginToggleGroup("Use voice controls?", useVoiceControls.boolValue);
+        GUILayout.Space(10);
+
+        EditorGUILayout.EndToggleGroup();*/
+
+        //END
+
+        GUILayout.Space(10);
     SO.ApplyModifiedProperties();
 
   }

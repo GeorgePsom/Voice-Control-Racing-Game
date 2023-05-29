@@ -16,7 +16,9 @@ using UnityEngine.UI;
 
 public class PrometeoCarController : MonoBehaviour
 {
-
+    public checkpoint_script lastCheckpoint;
+    public float currentTime = 0;
+    public float currentLapTime = 0;
     //CAR SETUP
 
       [Space(20)]
@@ -161,6 +163,7 @@ public class PrometeoCarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        lastCheckpoint = GameObject.Find("Finish line").GetComponent<checkpoint_script>();
       //In this part, we set the 'carRigidbody' value with the Rigidbody attached to this
       //gameObject. Also, we define the center of mass of the car with the Vector3 given
       //in the inspector.
@@ -265,7 +268,8 @@ public class PrometeoCarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        currentTime += Time.deltaTime;
+        currentLapTime += Time.deltaTime;
       //CAR DATA
 
       // We determine the speed of the car.

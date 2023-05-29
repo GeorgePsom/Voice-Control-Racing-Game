@@ -413,7 +413,6 @@ public class PrometeoCarController : MonoBehaviour
         */
         if (useTouchControls && touchControlsSetup)
         {
-
             if (throttlePTI.buttonPressed)
             {
                 CancelInvoke("DecelerateCar");
@@ -587,12 +586,13 @@ public class PrometeoCarController : MonoBehaviour
             {
                 ResetSteeringAngle();
             }
-            if (useVoiceControls)
-            {
+        }
+
+        if (useVoiceControls)
+        {
                 if (wReleased) { wReleased = false; }
                 if (sReleased) { sReleased = false; }
                 if (spaceReleased) { spaceReleased = false; }
-            }
         }
 
 
@@ -604,7 +604,6 @@ public class PrometeoCarController : MonoBehaviour
     // This method converts the car speed data from float to string, and then set the text of the UI carSpeedText with this value.
     public void CarSpeedUI()
     {
-
         if (useUI)
         {
             try
@@ -617,7 +616,6 @@ public class PrometeoCarController : MonoBehaviour
                 Debug.LogWarning(ex);
             }
         }
-
     }
 
     // This method controls the car sounds. For example, the car engine will sound slow when the car speed is low because the

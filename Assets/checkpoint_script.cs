@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,10 +47,10 @@ public class checkpoint_script : MonoBehaviour
             if(car.lastCheckpoint.CheckPointNr == 4 && CheckPointNr == 0)
             {
                 Debug.Log("lap");
-                float currentTime = TimeSpan.FromSeconds(car.currentTime);
-                float currentLapTime = TimeSpan.FromSeconds(car.currentLapTime);
-                Debug.Log(currentTime.ToString("hh':'mm':'ss")); // 00:03:48
-                Debug.Log(currentLapTime.ToString("hh':'mm':'ss"));
+                var currentTime = TimeSpan.FromSeconds(car.currentTime);
+                var currentLapTime = TimeSpan.FromSeconds(car.currentLapTime);
+                Debug.Log(currentTime.ToString("mm':'ss")); // 00:03:48
+                Debug.Log(currentLapTime.ToString("mm':'ss"));
                 Debug.Log(car.currentLapTime);
                 car.currentLapTime = 0;
                 car.lastCheckpoint = this;

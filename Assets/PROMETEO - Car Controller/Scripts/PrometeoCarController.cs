@@ -19,7 +19,9 @@ using UnityEngine.Windows.Speech;
 
 public class PrometeoCarController : MonoBehaviour
 {
-
+    public checkpoint_script lastCheckpoint;
+    public float currentTime = 0;
+    public float currentLapTime = 0;
     //CAR SETUP
 
     [Space(20)]
@@ -175,11 +177,12 @@ public class PrometeoCarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //In this part, we set the 'carRigidbody' value with the Rigidbody attached to this
-        //gameObject. Also, we define the center of mass of the car with the Vector3 given
-        //in the inspector.
-        carRigidbody = gameObject.GetComponent<Rigidbody>();
-        carRigidbody.centerOfMass = bodyMassCenter;
+        lastCheckpoint = GameObject.Find("Finish line").GetComponent<checkpoint_script>();
+      //In this part, we set the 'carRigidbody' value with the Rigidbody attached to this
+      //gameObject. Also, we define the center of mass of the car with the Vector3 given
+      //in the inspector.
+      carRigidbody = gameObject.GetComponent<Rigidbody>();
+      carRigidbody.centerOfMass = bodyMassCenter;
 
         //Initial setup to calculate the drift value of the car. This part could look a bit
         //complicated, but do not be afraid, the only thing we're doing here is to save the default
@@ -373,6 +376,7 @@ public class PrometeoCarController : MonoBehaviour
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
 
         keywordRecognizer.Start();
+        Debug.Log("setup done");
     }
 
     private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
@@ -389,8 +393,11 @@ public class PrometeoCarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        currentTime += Time.deltaTime;
+        currentLapTime += Time.deltaTime;
         //CAR DATA
+
+        //Debug.Log("voice control: " + useVoiceControls);
 
         // We determine the speed of the car.
         carSpeed = (2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60) / 1000;

@@ -4,7 +4,40 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 0322668d2df87024695c1444b1c45e61
+  - enabled: 1
+    path: Assets/mountain-race-track/scene1-night keyboard.unity
+    guid: ae71e57c2395c4843991d61529f6c96f
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: c850ee8c3b14cc8459e7e186857cf567
+  - enabled: 1
+    path: Assets/Scenes/Touch Race End.unity
+    guid: 3cd58782817cdd446a0108d5e545f809
+  - enabled: 1
+    path: Assets/Scenes/Voice Race End.unity
+    guid: ec3b6185737f50548bb3d4d0e298d9a6
+  - enabled: 1
+    path: Assets/mountain-race-track/scene1-night-voice.unity
+    guid: 19333f7b4eb3259429d8674904f1a3b5
+  - enabled: 1
+    path: Assets/Scenes/s1 keyboard 1.unity
+    guid: db5dabc1b33eee54f838c6f3ef539ae9
+  - enabled: 1
+    path: Assets/Scenes/Results.unity
+    guid: 498aba8f7b736dd4cbb7033157d378c1
+  - enabled: 1
+    path: Assets/Scenes/s1 voice.unity
+    guid: 55357f48a3e2b4643b0983826b854f64
+  - enabled: 1
+    path: Assets/Scenes/End Touch Practice.unity
+    guid: d66ad348a7fa37846be347026f998825
+  - enabled: 1
+    path: Assets/Scenes/End Voice Practice.unity
+    guid: f866ffda10e7cf74ab3dd80a24607fbb
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 49b074debfbbc4f49984f4e83d1e94b6,
       type: 2}

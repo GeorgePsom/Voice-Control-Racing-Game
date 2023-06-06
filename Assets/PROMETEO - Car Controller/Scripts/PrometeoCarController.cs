@@ -22,6 +22,9 @@ public class PrometeoCarController : MonoBehaviour
     public checkpoint_script lastCheckpoint;
     public float currentTime = 0;
     public float currentLapTime = 0;
+    public int lapCounter = 0;
+
+    public float[] lapTimes = new float[3];
     //CAR SETUP
 
     [Space(20)]
@@ -300,8 +303,7 @@ public class PrometeoCarController : MonoBehaviour
             Input.gyro.enabled = true;
         }
 
-
-        keywords.Add("start", () =>
+        Action start = () =>
         {
             wPressed = true;
             if (sPressed)
@@ -314,14 +316,16 @@ public class PrometeoCarController : MonoBehaviour
                 spacePressed = false;
                 spaceReleased = true;
             }
-            Debug.Log("w press");
-        });
+        };
 
-        keywords.Add("break", () =>
+        keywords.Add("start", start);
+        keywords.Add("gas", start);
+        keywords.Add("go", start);
+
+        Action brake = () =>
         {
 
             spacePressed = true;
-            Debug.Log("break press");
             if (wPressed)
             {
                 wPressed = false;
@@ -332,9 +336,13 @@ public class PrometeoCarController : MonoBehaviour
                 sPressed = false;
                 sReleased = true;
             }
-        });
+        };
 
-        keywords.Add("reverse", () =>
+        //keywords.Add("brake", brake);
+        //keywords.Add("stop", brake);
+        //keywords.Add("release", brake);
+
+        Action reverse = () =>
         {
             sPressed = true;
             if (spacePressed)
@@ -347,10 +355,12 @@ public class PrometeoCarController : MonoBehaviour
                 wPressed = false;
                 wReleased = true;
             }
-            Debug.Log("s press");
-        });
+        };
 
-        keywords.Add("release", () =>
+        keywords.Add("reverse", reverse);
+        keywords.Add("back", reverse);
+
+        Action release = () =>
         {
             if (spacePressed)
             {
@@ -367,9 +377,12 @@ public class PrometeoCarController : MonoBehaviour
                 sPressed = false;
                 sReleased = true;
             }
+        };
 
-            Debug.Log("release");
-        });
+        keywords.Add("release", release);
+        keywords.Add("brake", release);
+        keywords.Add("stop", release);
+
 
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray(), ConfidenceLevel.Low);
 
